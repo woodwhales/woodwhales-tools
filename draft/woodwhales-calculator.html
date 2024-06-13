@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>woodwhales-calculator</title>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+<div id="app" style="align-content: center; align-items: center; text-align: center;">
+    <el-row :gutter="10">
+        <el-col :span="1">&nbsp;</el-col>
+        <el-col :span="22"><h3>woodwhales-calculator</h3></el-col>
+        <el-col :span="1">&nbsp;</el-col>
+    </el-row>
+    <el-row :gutter="10" style="margin-bottom: 10px">
+        <el-col :span="1">&nbsp;</el-col>
+        <el-col :span="22"><el-divider><i class="el-icon-mobile-phone"></i></el-divider></el-col>
+        <el-col :span="2">&nbsp;</el-col>
+    </el-row>
+    <el-row :gutter="10" style="margin-bottom: 10px; align-content: center; align-items: center; text-align: left;">
+        <el-col :span="1">&nbsp;</el-col>
+        <el-col :span="22" >
+            <el-form :inline="true" :model="form" ref="form" :rules="rules">
+                <el-form-item label="总价" prop="price">
+                    <el-input v-model="form.price" class="no-input-number" size="mini" type="number"></el-input>
+                </el-form-item>
+                <el-form-item label="单品重量/体积" prop="unit">
+                    <el-input v-model="form.unit" class="no-input-number" size="mini" type="number"></el-input>
+                </el-form-item>
+                <el-form-item label="数量" prop="number">
+                    <el-input-number v-model="form.number" class="no-input-number" :min="1" size="mini"></el-input-number>
+                </el-form-item>
+                <el-form-item label="备注" prop="memo">
+                    <el-input v-model="form.memo" size="mini"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="success" size="mini" @click="submitForm('form')">添加</el-button>
+                    <el-button size="mini" @click="resetForm('form')">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </el-col>
+        <el-col :span="2">&nbsp;</el-col>
+    </el-row>
+    <el-row :gutter="10">
+        <el-col :span="1">&nbsp;</el-col>
+        <el-col :span="22">
+            <el-button style="width: 100%; color: #67C23A" @click="clearTable" v-show="tableData.length > 0">清空表格</el-button>
+        </el-col>
+        <el-col :span="2">&nbsp;</el-col>
+    </el-row>
+    <el-row :gutter="10">
+        <el-col :span="1">&nbsp;</el-col>
+        <el-col :span="22">
+            <el-card shadow="never">
+            <el-table
+                    border
+                    stripe
+                    :data="tableData"
+                    style="width: 100%">
+                <el-table-column
+                        prop="id"
+                        align="center"
+                        width="50"
+                        label="序号">
+                </el-table-column>
+                <el-table-column
+                        prop="price"
+                        align="center"
+                        label="总价格">
+                </el-table-column>
+                <el-table-column
+                        prop="unit"
+                        align="center"
+                        label="单品重量/体积">
+                </el-table-column>
+                <el-table-column
+                        prop="number"
+                        align="center"
+                        label="数量">
+                </el-table-column>
+                <el-table-column
+                        prop="memo"
+                        align="center"
+                        label="备注">
+                    <template slot-scope="scope">
+                        <el-input size="mini" v-model="scope.row.memo"></el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        prop="result"
+                        align="center"
+                        label="折合单价">
+                    <template slot-scope="scope">
+                        <span :style="getResultStyle(scope.row)">{{scope.row.result}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        label="操作"
+                        width="100">
+                    <template slot-scope="scope">
+                        <el-popconfirm
+                                confirm-button-text='确认'
+                                cancel-button-text='取消'
+                                icon="el-icon-info"
+                                icon-color="red"
+                                title="确定删除吗？"
+                                @confirm="removeDate(scope.row)">
+                            <el-button type="text" style="color: #F56C6C" slot="reference">删除</el-button>
+                        </el-popconfirm>
+                    </template>
+                </el-table-column>
+            </el-table>
+            </el-card>
+        </el-col>
+        <el-col :span="1">&nbsp;</el-col>
+    </el-row>
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                rules: {
+                    price: [
+                        { required: true, message: '请输入单价', trigger: 'blur' }
+                    ],
+                    unit: [
+                        { required: true, message: '单品重量/体积', trigger: 'blur' }
+                    ]
+                },
+                form: {
+                    id: null,
+                    price: '',
+                    unit: '',
+                    number: 1,
+                    maxCheap: false,
+                    memo: '',
+                    result: ''
+                },
+                tableData: []
+            }
+        },
+        mounted() {
+            this.init()
+        },
+        methods: {
+            init() {
+                this.form = {
+                    id: null,
+                    price: '',
+                    unit: '',
+                    number: 1,
+                    maxCheap: false,
+                    memo: '',
+                    result: ''
+                }
+            },
+            submitForm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.form.id = this.tableData.length === 0 ? 1 : (this.tableData.length + 1)
+                        this.tableData.push(JSON.parse(JSON.stringify(this.form)));
+                        this.reCalculate()
+                        this.$refs['form'].resetFields();
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            reCalculate() {
+                for (let i = 0; i < this.tableData.length; i++) {
+                    this.tableData[i].result = this.tableData[i].price / (this.tableData[i].unit * this.tableData[i].number)
+                }
+                // 遍历并更新最便宜的
+                let minIndex = 0;
+                let minValue = this.tableData[0].result;
+                for (let i = 1; i < this.tableData.length; i++) {
+                    if (this.tableData[i].result < minValue) {
+                        minValue = this.tableData[i].result;
+                        minIndex = i;
+                    }
+                }
+                this.tableData[minIndex].maxCheap = true;
+            },
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
+            },
+            clearTable() {
+                this.$confirm('确认删除？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.tableData = []
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '取消删除'
+                    });
+                });
+            },
+            removeDate(data) {
+                let index = this.tableData.findIndex(item => item.id === data.id);
+                if (index > -1) {
+                    this.tableData.splice(index, 1)
+                }
+            },
+            getResultStyle(data) {
+                if(this.tableData.length === 1) {
+                    return 'font-weight: bold; color:#67C23A;'
+                } else {
+                    if(data.maxCheap) {
+                        return 'font-weight: bold; color:#67C23A;'
+                    } else {
+                        return 'font-weight: bold;'
+                    }
+                }
+
+            }
+        }
+    })
+</script>
+<style>
+    .item {
+        margin-top: 10px;
+        margin-right: 40px;
+    }
+    .no-input-number {
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+        inputp[type='number'] {
+            -moz-appearance: textfield;
+        }
+    }
+
+    @media (max-width: 600px) {
+        body {
+            font-size: 1.2em;
+        }
+        .el-row {
+            flex-direction: column !important;
+            align-items: stretch !important;
+        }
+        .el-col {
+            width: 100% !important;
+        }
+        .el-form-item {
+            width: 100% !important;
+        }
+        .el-table th, .el-table td {
+            display: block !important;
+            width: 100% !important;
+        }
+        .el-table__header-wrapper, .el-table__body-wrapper {
+            overflow-x: auto !important;
+        }
+    }
+</style>
+</html>
