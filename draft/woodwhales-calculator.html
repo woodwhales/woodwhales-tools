@@ -76,7 +76,7 @@
                             align="center"
                             label="总价格">
                         <template slot-scope="scope">
-                            <el-input v-model="scope.row.price" class="no-input-number" size="mini" type="number" clearable="true"></el-input>
+                            <el-input v-model="scope.row.price" class="no-input-number" @input="reCalculate" size="mini" type="number" clearable="true"></el-input>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -84,7 +84,7 @@
                             align="center"
                             label="规格">
                         <template slot-scope="scope">
-                            <el-input v-model="scope.row.standard" class="no-input-number" size="mini" type="number" clearable="true"></el-input>
+                            <el-input v-model="scope.row.standard" class="no-input-number" @input="reCalculate" size="mini" type="number" clearable="true"></el-input>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -92,7 +92,7 @@
                             align="center"
                             label="数量">
                         <template slot-scope="scope">
-                            <el-input-number v-model="scope.row.number" class="no-input-number" :min="1" size="mini"></el-input-number>
+                            <el-input-number v-model="scope.row.number" class="no-input-number" @change="reCalculate" :min="1" size="mini"></el-input-number>
                         </template>
                     </el-table-column>
                     <el-table-column
