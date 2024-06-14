@@ -15,24 +15,27 @@
     </el-row>
     <el-row :gutter="10" style="margin-bottom: 10px">
         <el-col :span="1">&nbsp;</el-col>
-        <el-col :span="22"><el-divider><i class="el-icon-mobile-phone"></i></el-divider></el-col>
+        <el-col :span="22">
+            <el-divider><i class="el-icon-mobile-phone"></i></el-divider>
+        </el-col>
         <el-col :span="2">&nbsp;</el-col>
     </el-row>
     <el-row :gutter="10" style="margin-bottom: 10px; align-content: center; align-items: center; text-align: left;">
         <el-col :span="1">&nbsp;</el-col>
-        <el-col :span="22" >
+        <el-col :span="22">
             <el-form :inline="true" :model="form" ref="form" :rules="rules">
                 <el-form-item label="总价" prop="price">
-                    <el-input v-model="form.price" class="no-input-number" size="mini" type="number"></el-input>
+                    <el-input v-model="form.price" class="no-input-number" size="mini" type="number" clearable="true"></el-input>
                 </el-form-item>
-                <el-form-item label="单品重量/体积" prop="unit">
-                    <el-input v-model="form.unit" class="no-input-number" size="mini" type="number"></el-input>
+                <el-form-item label="规格" prop="standard">
+                    <el-input v-model="form.standard" class="no-input-number" size="mini" type="number" clearable="true"></el-input>
                 </el-form-item>
                 <el-form-item label="数量" prop="number">
-                    <el-input-number v-model="form.number" class="no-input-number" :min="1" size="mini"></el-input-number>
+                    <el-input-number v-model="form.number" class="no-input-number" :min="1"
+                                     size="mini"></el-input-number>
                 </el-form-item>
                 <el-form-item label="备注" prop="memo">
-                    <el-input v-model="form.memo" size="mini"></el-input>
+                    <el-input v-model="form.memo" size="mini" clearable="true"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="success" size="mini" @click="submitForm('form')">添加</el-button>
@@ -42,10 +45,10 @@
         </el-col>
         <el-col :span="2">&nbsp;</el-col>
     </el-row>
-    <el-row :gutter="10">
+    <el-row :gutter="10" v-if="tableData.length > 0">
         <el-col :span="1">&nbsp;</el-col>
         <el-col :span="22">
-            <el-button style="width: 100%; color: #67C23A" @click="clearTable" v-show="tableData.length > 0">清空表格</el-button>
+            <el-button style="width: 100%; color: #67C23A" @click="clearTable">清空表格</el-button>
         </el-col>
         <el-col :span="2">&nbsp;</el-col>
     </el-row>
@@ -53,64 +56,73 @@
         <el-col :span="1">&nbsp;</el-col>
         <el-col :span="22">
             <el-card shadow="never">
-            <el-table
-                    border
-                    stripe
-                    :data="tableData"
-                    style="width: 100%">
-                <el-table-column
-                        prop="id"
-                        align="center"
-                        width="50"
-                        label="序号">
-                </el-table-column>
-                <el-table-column
-                        prop="price"
-                        align="center"
-                        label="总价格">
-                </el-table-column>
-                <el-table-column
-                        prop="unit"
-                        align="center"
-                        label="单品重量/体积">
-                </el-table-column>
-                <el-table-column
-                        prop="number"
-                        align="center"
-                        label="数量">
-                </el-table-column>
-                <el-table-column
-                        prop="memo"
-                        align="center"
-                        label="备注">
-                    <template slot-scope="scope">
-                        <el-input size="mini" v-model="scope.row.memo"></el-input>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        prop="result"
-                        align="center"
-                        label="折合单价">
-                    <template slot-scope="scope">
-                        <span :style="getResultStyle(scope.row)">{{scope.row.result}}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        label="操作"
-                        width="100">
-                    <template slot-scope="scope">
-                        <el-popconfirm
-                                confirm-button-text='确认'
-                                cancel-button-text='取消'
-                                icon="el-icon-info"
-                                icon-color="red"
-                                title="确定删除吗？"
-                                @confirm="removeDate(scope.row)">
-                            <el-button type="text" style="color: #F56C6C" slot="reference">删除</el-button>
-                        </el-popconfirm>
-                    </template>
-                </el-table-column>
-            </el-table>
+                <el-table
+                        border
+                        stripe
+                        :data="tableData"
+                        style="width: 100%">
+                    <el-table-column
+                            type="index"
+                            align="center"
+                            width="50"
+                            label="序号">
+                    </el-table-column>
+                    <el-table-column
+                            prop="price"
+                            align="center"
+                            label="总价格">
+                        <template slot-scope="scope">
+                            <el-input v-model="scope.row.price" class="no-input-number" size="mini" type="number" clearable="true"></el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="standard"
+                            align="center"
+                            label="规格">
+                        <template slot-scope="scope">
+                            <el-input v-model="scope.row.standard" class="no-input-number" size="mini" type="number" clearable="true"></el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="number"
+                            align="center"
+                            label="数量">
+                        <template slot-scope="scope">
+                            <el-input-number v-model="scope.row.number" class="no-input-number" :min="1" size="mini"></el-input-number>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="memo"
+                            align="center"
+                            label="备注">
+                        <template slot-scope="scope">
+                            <el-input size="mini" v-model="scope.row.memo" clearable="true"></el-input>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="result"
+                            align="center"
+                            label="折合单价">
+                        <template slot-scope="scope">
+                            <span :style="getResultStyle(scope.row)">{{scope.row.result}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            label="操作"
+                            width="100">
+                        <template slot-scope="scope">
+                            <el-popconfirm
+                                    confirm-button-text='确认'
+                                    cancel-button-text='取消'
+                                    icon="el-icon-info"
+                                    icon-color="red"
+                                    title="确定删除吗？"
+                                    @confirm="removeDate(scope.row)">
+                                <el-button type="text" style="color: #F56C6C" slot="reference">删除</el-button>
+                            </el-popconfirm>
+                        </template>
+                    </el-table-column>
+                </el-table>
             </el-card>
         </el-col>
         <el-col :span="1">&nbsp;</el-col>
@@ -128,16 +140,16 @@
             return {
                 rules: {
                     price: [
-                        { required: true, message: '请输入单价', trigger: 'blur' }
+                        {required: true, message: '请输入单价', trigger: 'blur'}
                     ],
-                    unit: [
-                        { required: true, message: '单品重量/体积', trigger: 'blur' }
+                    standard: [
+                        {required: true, message: '请输入规格', trigger: 'blur'}
                     ]
                 },
                 form: {
                     id: null,
                     price: '',
-                    unit: '',
+                    standard: '',
                     number: 1,
                     maxCheap: false,
                     memo: '',
@@ -154,7 +166,7 @@
                 this.form = {
                     id: null,
                     price: '',
-                    unit: '',
+                    standard: '',
                     number: 1,
                     maxCheap: false,
                     memo: '',
@@ -164,7 +176,7 @@
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        this.form.id = this.tableData.length === 0 ? 1 : (this.tableData.length + 1)
+                        this.form.id = this.generateUUID()
                         this.tableData.push(JSON.parse(JSON.stringify(this.form)));
                         this.reCalculate()
                         this.$refs['form'].resetFields();
@@ -173,9 +185,14 @@
                     }
                 });
             },
+            generateUUID() {
+                return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+                );
+            },
             reCalculate() {
                 for (let i = 0; i < this.tableData.length; i++) {
-                    this.tableData[i].result = this.tableData[i].price / (this.tableData[i].unit * this.tableData[i].number)
+                    this.tableData[i].result = this.tableData[i].price / (this.tableData[i].standard * this.tableData[i].number)
                 }
                 // 遍历并更新最便宜的
                 let minIndex = 0;
@@ -212,10 +229,10 @@
                 }
             },
             getResultStyle(data) {
-                if(this.tableData.length === 1) {
+                if (this.tableData.length === 1) {
                     return 'font-weight: bold; color:#67C23A;'
                 } else {
-                    if(data.maxCheap) {
+                    if (data.maxCheap) {
                         return 'font-weight: bold; color:#67C23A;'
                     } else {
                         return 'font-weight: bold;'
@@ -231,11 +248,13 @@
         margin-top: 10px;
         margin-right: 40px;
     }
+
     .no-input-number {
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
             -webkit-appearance: none;
         }
+
         inputp[type='number'] {
             -moz-appearance: textfield;
         }
@@ -245,20 +264,25 @@
         body {
             font-size: 1.2em;
         }
+
         .el-row {
             flex-direction: column !important;
             align-items: stretch !important;
         }
+
         .el-col {
             width: 100% !important;
         }
+
         .el-form-item {
             width: 100% !important;
         }
+
         .el-table th, .el-table td {
             display: block !important;
             width: 100% !important;
         }
+
         .el-table__header-wrapper, .el-table__body-wrapper {
             overflow-x: auto !important;
         }
