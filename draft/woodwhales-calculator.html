@@ -29,21 +29,21 @@
         <el-col :span="22">
             <el-form :inline="true" :model="form" ref="form" :rules="rules">
                 <el-form-item label="总价" prop="price">
-                    <el-input v-model="form.price" class="no-input-number" size="mini" type="number" clearable="true"></el-input>
+                    <el-input v-model="form.price" class="no-input-number"  type="number" clearable="true"></el-input>
                 </el-form-item>
                 <el-form-item label="规格" prop="standard">
-                    <el-input v-model="form.standard" class="no-input-number" size="mini" type="number" clearable="true"></el-input>
+                    <el-input v-model="form.standard" class="no-input-number"  type="number" clearable="true"></el-input>
                 </el-form-item>
                 <el-form-item label="数量" prop="number">
                     <el-input-number v-model="form.number" class="no-input-number" :min="1"
-                                     size="mini"></el-input-number>
+                                     ></el-input-number>
                 </el-form-item>
                 <el-form-item label="备注" prop="memo">
-                    <el-input v-model="form.memo" size="mini" clearable="true"></el-input>
+                    <el-input v-model="form.memo"  clearable="true"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="success" size="mini" @click="submitForm('form')">添加</el-button>
-                    <el-button size="mini" @click="resetForm('form')">重置</el-button>
+                    <el-button type="success"  @click="submitForm('form')">添加</el-button>
+                    <el-button  @click="resetForm('form')">重置</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
@@ -76,7 +76,7 @@
                             align="center"
                             label="总价格">
                         <template slot-scope="scope">
-                            <el-input v-model="scope.row.price" class="no-input-number" @input="reCalculate" size="mini" type="number" clearable="true"></el-input>
+                            <el-input v-model="scope.row.price" class="no-input-number" @input="reCalculate"  type="number" clearable="true"></el-input>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -84,7 +84,7 @@
                             align="center"
                             label="规格">
                         <template slot-scope="scope">
-                            <el-input v-model="scope.row.standard" class="no-input-number" @input="reCalculate" size="mini" type="number" clearable="true"></el-input>
+                            <el-input v-model="scope.row.standard" class="no-input-number" @input="reCalculate"  type="number" clearable="true"></el-input>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -92,7 +92,7 @@
                             align="center"
                             label="数量">
                         <template slot-scope="scope">
-                            <el-input-number v-model="scope.row.number" class="no-input-number" @change="reCalculate" :min="1" size="mini"></el-input-number>
+                            <el-input-number v-model="scope.row.number" class="no-input-number" @change="reCalculate" :min="1" ></el-input-number>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -100,7 +100,7 @@
                             align="center"
                             label="备注">
                         <template slot-scope="scope">
-                            <el-input size="mini" v-model="scope.row.memo" clearable="true"></el-input>
+                            <el-input  v-model="scope.row.memo" clearable="true"></el-input>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -197,6 +197,7 @@
             reCalculate() {
                 for (let i = 0; i < this.tableData.length; i++) {
                     this.tableData[i].result = this.tableData[i].price / (this.tableData[i].standard * this.tableData[i].number)
+                    this.tableData[i].maxCheap = false;
                 }
                 // 遍历并更新最便宜的
                 let minIndex = 0;
