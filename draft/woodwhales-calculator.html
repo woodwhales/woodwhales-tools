@@ -255,6 +255,7 @@
                 if (index > -1) {
                     this.tableData.splice(index, 1)
                 }
+                this.reCalculate()
             },
             getResultStyle(data) {
                 if (this.tableData.length === 1) {
